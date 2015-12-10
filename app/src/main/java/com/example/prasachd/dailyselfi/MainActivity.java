@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.ListActivity;
 import android.app.PendingIntent;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -17,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 import java.io.File;
 import android.os.Environment;
@@ -39,6 +41,9 @@ public class MainActivity extends ListActivity {
     private PendingIntent mPendingIntent;
     private Intent mNotificationIntent;
 
+    private DatabaseOpenHelper mDbHelper;
+    private SimpleCursorAdapter mAdapter;
+
     private static final int REQUEST_TAKE_PHOTO = 2;
 
     @Override
@@ -50,6 +55,9 @@ public class MainActivity extends ListActivity {
         mListAdapter = new CustomListAdapter(this, R.layout.listitem, R.id.item_txt, mSelfieList);
         mListAdapter.setNotifyOnChange(true);
         setListAdapter(mListAdapter);
+
+        // Create a new DatabaseHelper
+        mDbHelper = new DatabaseOpenHelper(this);
 
         /*Show Full*/
         ListView listView = getListView();
@@ -67,8 +75,25 @@ public class MainActivity extends ListActivity {
         mPendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, mNotificationIntent, 0);
 
         createDailySelfieReminders();
+
     }
 
+    public void deleteComment(MySelfieBean mySelfieBean) {
+        mDbHelper.getWritableDatabase().delete(DatabaseOpenHelper.TABLE_NAME,
+                DatabaseOpenHelper.FILE_NAME + " = ?",
+                new String[] { String.valueOf(mySelfieBean.getMName()) });
+    }
+
+    public void insertComment(MySelfieBean mySelfieBean) {
+
+        ContentValues values = new ContentValues();
+
+        values.put(DatabaseOpenHelper.FILE_NAME, mySelfieBean.getMName());
+        values.put(DatabaseOpenHelper.FILE_PATH, mySelfieBean.getMPath());
+        values.put(DatabaseOpenHelper.COMMENT, mySelfieBean.getMComment());
+
+        mDbHelper.getWritableDatabase().insert(DatabaseOpenHelper.TABLE_NAME, null, values);
+    }
 
     private void createDailySelfieReminders() {
         mAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
@@ -102,7 +127,7 @@ public class MainActivity extends ListActivity {
             mySelfieList.clear();
             /* Load selfies from the image directory */
             for (File file : IMAGE_DIR.listFiles(new SelfieFileFilter())) {
-                mySelfieList.add(new MySelfieBean(file.getName(), file.getAbsolutePath(), getThumbnail(file.getAbsolutePath())));
+                mySelfieList.add(new MySelfieBean(file.getName(), file.getAbsolutePath(), getThumbnail(file.getAbsolutePath()), null));
             }
 
         }
