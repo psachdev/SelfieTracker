@@ -57,6 +57,15 @@ public class CustomListAdapter extends ArrayAdapter<MySelfieBean> {
         if (mySelfie != null) {
             viewHolder.textView.setText(getReadableSelfieName(mySelfie.getMName()));
             viewHolder.imageView.setImageBitmap(mySelfie.getMThumb());
+            viewHolder.imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent fullImageIntent = new Intent(Intent.ACTION_VIEW);
+                    fullImageIntent.setDataAndType(Uri.parse("file://" + mySelfie.getMPath()), "image/*");
+                    mContext.startActivity(fullImageIntent);
+                }
+            });
+
             viewHolder.addCommentButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

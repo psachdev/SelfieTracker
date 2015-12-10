@@ -59,7 +59,7 @@ public class MainActivity extends ListActivity {
         // Create a new DatabaseHelper
         mDbHelper = new DatabaseOpenHelper(this);
 
-        /*Show Full*/
+        /*Show Full
         ListView listView = getListView();
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -69,6 +69,7 @@ public class MainActivity extends ListActivity {
                 startActivity(fullImageIntent);
             }
         });
+        */
 
         /* Create Pending Intent for Reminder notification */
         mNotificationIntent = new Intent(MainActivity.this, DailyNotificationReceiver.class);
@@ -81,7 +82,7 @@ public class MainActivity extends ListActivity {
     public void deleteComment(MySelfieBean mySelfieBean) {
         mDbHelper.getWritableDatabase().delete(DatabaseOpenHelper.TABLE_NAME,
                 DatabaseOpenHelper.FILE_NAME + " = ?",
-                new String[] { String.valueOf(mySelfieBean.getMName()) });
+                new String[]{String.valueOf(mySelfieBean.getMName())});
     }
 
     public void insertComment(MySelfieBean mySelfieBean) {
