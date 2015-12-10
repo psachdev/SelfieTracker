@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DailySelfie</string>
+    <string name="app_name">Selfie Tracker</string>
     <string name="action_settings">Settings</string>
     <string name="action_camera">Camera</string>
     <string name="title_activity_selfie_full_screen">SelfieFullScreen</string>

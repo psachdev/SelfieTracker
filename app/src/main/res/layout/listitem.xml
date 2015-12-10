@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-android:orientation="horizontal"
+android:orientation="vertical"
 android:layout_width="fill_parent"
 android:layout_height="fill_parent"
 android:padding="2dp"
@@ -9,19 +9,25 @@ xmlns:android="http://schemas.android.com/apk/res/android">
 
 <ImageView
     android:id="@+id/item_img"
-    android:layout_width="0dp"
+    android:layout_width="fill_parent"
     android:layout_height="50dp"
-    android:layout_margin="5dp"
-    android:layout_weight="0.20" />
+    android:layout_margin="5dp" />
 
 <TextView
     android:id="@+id/item_txt"
     android:gravity="center"
-    android:layout_width="0dp"
+    android:layout_width="fill_parent"
     android:layout_height="50dp"
-    android:layout_margin="5dp"
-    android:layout_weight="0.70">
+    android:layout_margin="5dp">
 </TextView>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:padding="2dp"
+        android:id="@+id/button_lst"
+        xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ImageButton
         android:id="@+id/item_comment"
@@ -30,5 +36,21 @@ xmlns:android="http://schemas.android.com/apk/res/android">
         android:layout_margin="5dp"
         android:src="@drawable/plus"
         android:layout_weight="0.10" />
+
+    <ImageButton
+        android:layout_width="0dp"
+        android:layout_weight="0.10"
+        android:layout_height="50dp"
+        android:layout_margin="5dp"
+        android:src="@drawable/fbook32_32"
+        android:id="@+id/shareButton" />
+    <ImageButton
+        android:layout_width="0dp"
+        android:layout_weight="0.10"
+        android:layout_height="50dp"
+        android:layout_margin="5dp"
+        android:src="@drawable/trash32_32"
+        android:id="@+id/deleteListItemButton" />
+    </LinearLayout>
 
 </LinearLayout>

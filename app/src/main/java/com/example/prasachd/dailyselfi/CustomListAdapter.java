@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
+import java.io.File;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -42,7 +45,10 @@ public class CustomListAdapter extends ArrayAdapter<MySelfieBean> {
             viewHolder = new ViewHolder();
             viewHolder.textView = (TextView) convertView.findViewById(R.id.item_txt);
             viewHolder.imageView = (ImageView) convertView.findViewById(R.id.item_img);
-            viewHolder.imageButton = (ImageButton) convertView.findViewById(R.id.item_comment);
+            viewHolder.addCommentButton = (ImageButton) convertView.findViewById(R.id.item_comment);
+            viewHolder.shareButton = (ImageButton) convertView.findViewById(R.id.shareButton);
+            viewHolder.deleteButton = (ImageButton) convertView.findViewById(R.id.deleteListItemButton);
+
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
@@ -51,21 +57,60 @@ public class CustomListAdapter extends ArrayAdapter<MySelfieBean> {
         if (mySelfie != null) {
             viewHolder.textView.setText(getReadableSelfieName(mySelfie.getMName()));
             viewHolder.imageView.setImageBitmap(mySelfie.getMThumb());
-            viewHolder.imageButton.setOnClickListener(new View.OnClickListener() {
+            viewHolder.addCommentButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    final ImageButton imageButton = (ImageButton)v;
+                    final ImageButton imageButton = (ImageButton) v;
                     Boolean commentAdded = mySelfie.getMCommentAdded();
-                    if(commentAdded){
+                    if (commentAdded) {
                         showAddedComment(imageButton, mySelfie);
-                    }else {
+                    } else {
                         showInputDialog(imageButton, mySelfie);
                     }
+                }
+            });
+
+            viewHolder.shareButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    final ImageButton imageButton = (ImageButton) v;
+                    shareImage(mySelfie);
+                }
+            });
+
+            viewHolder.deleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Integer index = (Integer) v.getTag();
+                    CustomListAdapter.this.remove(mySelfie);
+                    CustomListAdapter.this.notifyDataSetChanged();
+                    File file = new File(mySelfie.getMPath());
+                    file.delete();
                 }
             });
         }
 
         return convertView;
+    }
+
+    private void shareImage(MySelfieBean mySelfieBean) {
+        Intent share = new Intent(Intent.ACTION_SEND);
+
+        // If you want to share a png image only, you can do:
+        // setType("image/png"); OR for jpeg: setType("image/jpeg");
+        share.setType("image/*");
+
+        // Make sure you put example png image named myImage.png in your
+        // directory
+        String imagePath = mySelfieBean.getMPath();
+
+        File imageFileToShare = new File(imagePath);
+
+        Uri uri = Uri.fromFile(imageFileToShare);
+        share.putExtra(Intent.EXTRA_STREAM, uri);
+        share.putExtra(Intent.EXTRA_TEXT, mySelfieBean.getMComment());
+
+        mContext.startActivity(Intent.createChooser(share, "Share Image!"));
     }
 
     protected void showAddedComment(ImageButton imageButton, MySelfieBean mySelfie) {
@@ -158,20 +203,25 @@ public class CustomListAdapter extends ArrayAdapter<MySelfieBean> {
 private class ViewHolder {
         TextView textView;
         ImageView imageView;
-        ImageButton imageButton;
+        ImageButton addCommentButton;
+        ImageButton shareButton;
+        ImageButton deleteButton;
     }
 
     private static String getReadableSelfieName(String name) {
         String[] split = name.split("_");
-        String date = split[1];
-        String time = split[2];
-        String dateTime = date + time;
-        String format = "yyyy_MM_dd_HH_mm_ss";
-
-        try {
-            return DateFormat.getDateTimeInstance().format(new SimpleDateFormat(format).parse(dateTime));
-        } catch (ParseException pe) {
+        if(split.length < 8 ){
             return name;
         }
+        String date = split[2] + "/" + split[3] + "/" + split[4];
+        String time = split[5] + ":" + split[6] + ":" + split[7];
+        String dateTime = date + " " + time;
+        //String format = "yyyy/MM/dd HH:mm:ss";
+        return dateTime;
+        //try {
+            //return DateFormat.getDateTimeInstance().format(new SimpleDateFormat(format).parse(dateTime));
+        //} catch (ParseException pe) {
+        //    return name;
+        //}
     }
 }
